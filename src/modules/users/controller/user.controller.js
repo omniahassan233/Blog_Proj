@@ -1,0 +1,25 @@
+import userModel from "../../../../data_base/models/user.model.js";
+
+export const signUp = async(req,res) =>{
+    let {name,email,password} = req.body;
+
+    //find --> [] returns array  and if not exist empty array
+    // let foundedUser = await userModel.find({email});
+    // if(foundedUser.length != 0) res.json({message:"user already exists"});
+
+    //findOne --> returns object and if not exist will return null
+    let foundedUser = await userModel.findOne({email});
+    if(foundedUser) res.json({message:"user already exists"});
+
+     //findById --> returns object and if not exist will return null
+    //  let foundedUser = await userModel.findById("123");
+    //  if(foundedUser) res.json({message:"user already exists"});
+
+    let addedUser = await userModel.insertMany({name,email,password});
+    res.json({message:"user created successfully, ", addedUser})
+}
+
+export const getAllUsers = async(req,res) => {
+    let data = await userModel.find();
+    res.json({message:"done", data})
+}
