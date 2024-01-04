@@ -19,6 +19,19 @@ export const signUp = async(req,res) =>{
     res.json({message:"user created successfully, ", addedUser})
 }
 
+export const signIn = async(req,res)=>{
+    let{email, password} = req.body;
+    const foundUser = await userModel.findOne({email});
+    if(foundUser){
+        if(password==foundUser.password)
+            res.json({message:"your profile is, ", foundUser});
+        else
+            res.json({message:"wrong password"});
+    }else{
+        res.json({message:"you have to register first!"});
+    }
+}
+
 export const getAllUsers = async(req,res) => {
     let data = await userModel.find();
     res.json({message:"done", data})
