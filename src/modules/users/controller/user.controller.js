@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import userModel from "../../../../data_base/models/user.model.js";
 
 export const signUp = async(req,res) =>{
@@ -14,8 +15,8 @@ export const signUp = async(req,res) =>{
      //findById --> returns object and if not exist will return null
     //  let foundedUser = await userModel.findById("123");
     //  if(foundedUser) res.json({message:"user already exists"});
-
-    let addedUser = await userModel.insertMany({name,email,password});
+    let hashedPassword = bcrypt.hashSync(password,8);
+    let addedUser = await userModel.insertMany({name,email,password:hashedPassword});
     res.json({message:"user created successfully, ", addedUser})
 }
 
@@ -23,10 +24,14 @@ export const signIn = async(req,res)=>{
     let{email, password} = req.body;
     const foundUser = await userModel.findOne({email});
     if(foundUser){
-        if(password==foundUser.password)
+        // let passwordsMatched = await bcrypt.compare(password, foundUser.password);
+        let passwordsMatched = bcrypt.compareSync(password, foundUser.password);
+        
+        if(passwordsMatched)
             res.json({message:"your profile is, ", foundUser});
         else
             res.json({message:"wrong password"});
+
     }else{
         res.json({message:"you have to register first!"});
     }
